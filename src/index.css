@@ -1,0 +1,256 @@
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,300;0,400;0,600;0,800;1,700&family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+:root {
+  --color-cyan: #00f3ff;
+  --color-purple: #b026ff;
+  --color-magenta: #ff007f;
+  --color-gold: #f59e0b;
+  --bg-dark: #02040a;
+  --bg-panel: rgba(10, 16, 30, 0.75);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-dark);
+  color: #f3f4f6;
+  font-family: 'Space Grotesk', sans-serif;
+  overflow-x: hidden;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(0, 243, 255, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 90% 40%, rgba(176, 38, 255, 0.06) 0%, transparent 40%),
+    radial-gradient(circle at 10% 80%, rgba(245, 158, 11, 0.05) 0%, transparent 40%);
+}
+
+.font-orbitron {
+  font-family: 'Orbitron', sans-serif;
+}
+
+.font-rajdhani {
+  font-family: 'Rajdhani', sans-serif;
+}
+
+.font-exo {
+  font-family: 'Exo 2', sans-serif;
+}
+
+/* Glassmorphism Luxury Panels */
+.glass-panel-luxury {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(6, 11, 25, 0.9) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 243, 255, 0.2);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.glass-panel-gold {
+  background: linear-gradient(135deg, rgba(30, 20, 10, 0.8) 0%, rgba(10, 8, 20, 0.9) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 25px rgba(245, 158, 11, 0.1);
+}
+
+/* Futuristic HUD Borders & Corners */
+.hud-card {
+  position: relative;
+}
+
+.hud-card::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 20px;
+  width: 40px;
+  height: 2px;
+  background: #00f3ff;
+  box-shadow: 0 0 8px #00f3ff;
+}
+
+.hud-card::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  right: 20px;
+  width: 40px;
+  height: 2px;
+  background: #f59e0b;
+  box-shadow: 0 0 8px #f59e0b;
+}
+
+/* Cyber Glow Borders */
+.glow-cyan-border {
+  border: 1px solid rgba(0, 243, 255, 0.4);
+  box-shadow: 0 0 20px rgba(0, 243, 255, 0.15), inset 0 0 15px rgba(0, 243, 255, 0.05);
+}
+
+.glow-gold-border {
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.15), inset 0 0 15px rgba(245, 158, 11, 0.05);
+}
+
+/* Luxury Gold & Metallic Text Gradients */
+.text-gradient-gold {
+  background: linear-gradient(135deg, #fef3c7 0%, #f59e0b 50%, #d97706 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-cyan {
+  background: linear-gradient(135deg, #ffffff 0%, #38bdf8 50%, #00f3ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-futuristic {
+  background: linear-gradient(135deg, #ffffff 0%, #a5f3fc 30%, #38bdf8 60%, #c084fc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Animated Shimmer Buttons */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.btn-shimmer-cyan {
+  background: linear-gradient(90deg, #0284c7 0%, #00f3ff 25%, #2563eb 50%, #00f3ff 75%, #0284c7 100%);
+  background-size: 200% 100%;
+  animation: shimmer 4s infinite linear;
+}
+
+.btn-shimmer-gold {
+  background: linear-gradient(90deg, #b45309 0%, #f59e0b 25%, #d97706 50%, #fef08a 75%, #b45309 100%);
+  background-size: 200% 100%;
+  animation: shimmer 4s infinite linear;
+}
+
+/* CYBER GLITCH LOGO ANIMATION STYLES */
+@keyframes glitch-anim-1 {
+  0% {
+    clip-path: inset(20% 0 50% 0);
+    transform: translate(-6px, -2px);
+    filter: drop-shadow(3px 0 #00f3ff);
+  }
+  20% {
+    clip-path: inset(60% 0 10% 0);
+    transform: translate(6px, 2px);
+    filter: drop-shadow(-3px 0 #ff007f);
+  }
+  40% {
+    clip-path: inset(40% 0 30% 0);
+    transform: translate(-4px, 4px);
+    filter: drop-shadow(4px 0 #00f3ff);
+  }
+  60% {
+    clip-path: inset(80% 0 5% 0);
+    transform: translate(5px, -3px);
+    filter: drop-shadow(-4px 0 #b026ff);
+  }
+  80% {
+    clip-path: inset(10% 0 70% 0);
+    transform: translate(-3px, 1px);
+    filter: drop-shadow(3px 0 #f59e0b);
+  }
+  100% {
+    clip-path: inset(30% 0 40% 0);
+    transform: translate(0, 0);
+    filter: none;
+  }
+}
+
+@keyframes glitch-anim-2 {
+  0% {
+    clip-path: inset(50% 0 20% 0);
+    transform: translate(6px, 3px);
+    filter: drop-shadow(-3px 0 #00f3ff);
+  }
+  25% {
+    clip-path: inset(10% 0 60% 0);
+    transform: translate(-6px, -3px);
+    filter: drop-shadow(4px 0 #ff007f);
+  }
+  50% {
+    clip-path: inset(70% 0 15% 0);
+    transform: translate(4px, -1px);
+    filter: drop-shadow(-4px 0 #00f3ff);
+  }
+  75% {
+    clip-path: inset(30% 0 45% 0);
+    transform: translate(-5px, 2px);
+    filter: drop-shadow(3px 0 #b026ff);
+  }
+  100% {
+    clip-path: inset(0% 0 0% 0);
+    transform: translate(0, 0);
+    filter: none;
+  }
+}
+
+.glitch-layer-1 {
+  animation: glitch-anim-1 0.2s infinite linear alternate-reverse;
+}
+
+.glitch-layer-2 {
+  animation: glitch-anim-2 0.15s infinite linear alternate-reverse;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #02040a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #00f3ff, #b026ff, #f59e0b);
+  border-radius: 4px;
+}
+
+/* Print CSS Optimization */
+@media print {
+  html, body, main {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    background-image: none !important;
+    color: #0f172a !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Hide header, navbar, footer, buttons, and 3D background canvas elements completely */
+  header, footer, nav, button, canvas, svg.particle-bg, .print-hide, .no-print {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+
+  .print-ticket-card {
+    position: relative !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    max-width: 700px !important;
+    margin: 0 auto !important;
+    padding: 24px !important;
+    border: 2px solid #0f172a !important;
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    box-shadow: none !important;
+    border-radius: 16px !important;
+    page-break-inside: avoid !important;
+  }
+
+  .print-ticket-card * {
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+  }
+}
