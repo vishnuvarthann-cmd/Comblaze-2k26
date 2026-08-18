@@ -1,4 +1,4 @@
-// Resend Email Dispatch Helper (Client-Side & Proxy Compatible)
+// Resend Email Dispatch Helper (Vercel Serverless & Client-Side Compatible)
 
 const RESEND_API_KEY = import.meta.env.VITE_RESEND_API_KEY || 're_geGQ3Z9b_KwyMp9Pus97L3PVW9NqCSEe4';
 const SENDER_EMAIL = import.meta.env.VITE_SENDER_EMAIL || 'onboarding@resend.dev';
@@ -43,7 +43,6 @@ export async function sendConfirmationEmailDirect(payload) {
           <p style="margin: 6px 0; font-size: 14px;"><strong>Payment Status:</strong> <span style="color: #4ade80; font-weight: 700;">PAID & CONFIRMED</span></p>
         </div>
 
-        {/* QR TICKET ENTRY PASS CONTAINER FOR GMAIL & EMAIL CLIENTS */}
         <div style="text-align: center; background-color: #1e293b; padding: 24px; border-radius: 16px; border: 1px dashed #38bdf8; margin: 24px 0;">
           <p style="color: #38bdf8; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 12px 0;">
             OFFICIAL ENTRY TICKET QR PASS
@@ -70,15 +69,37 @@ export async function sendConfirmationEmailDirect(payload) {
     </div>
   `;
 
-  // Use proxy endpoint in browser environment to avoid CORS "Failed to fetch" block
-  const targetUrl = typeof window !== 'undefined' && window.location.hostname === 'localhost'
-    ? '/api/resend/emails'
-    : 'https://api.resend.com/emails';
+  const emailSubject = `[Confirmed Pass + QR] Entry Ticket - COMBLAZE 2K26 | Ref: ${refCode}`;
 
+  // 1. First attempt: Send via Vercel Serverless Function (/api/send-email)
   try {
-    console.log(`[Resend] Dispatching confirmation email with QR Code to: ${registration.email} via ${targetUrl}...`);
+    console.log(`[Resend] Attempting Vercel serverless email dispatch for: ${registration.email}...`);
+    const serverlessRes = await fetch('/api/send-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        to: registration.email,
+        subject: emailSubject,
+        html: emailHtml,
+        registration
+      })
+    });
 
-    const res = await fetch(targetUrl, {
+    if (serverlessRes.ok) {
+      const sData = await serverlessRes.json();
+      console.log('[Resend] Vercel serverless email sent successfully!', sData);
+      return { success: true, messageId: sData.id, data: sData };
+    } else {
+      const errText = await serverlessRes.text();
+      console.warn('[Resend] Vercel serverless API returned non-200:', errText);
+    }
+  } catch (err) {
+    console.warn('[Resend] Vercel serverless route not reachable, trying direct Resend API fallback...', err);
+  }
+
+  // 2. Second attempt / Fallback: Direct Resend API call
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${RESEND_API_KEY}`,
@@ -87,7 +108,7 @@ export async function sendConfirmationEmailDirect(payload) {
       body: JSON.stringify({
         from: `COMBLAZE 2K26 <${SENDER_EMAIL}>`,
         to: [registration.email],
-        subject: `[Confirmed Pass + QR] Entry Ticket - COMBLAZE 2K26 | Ref: ${refCode}`,
+        subject: emailSubject,
         html: emailHtml
       })
     });
@@ -95,14 +116,14 @@ export async function sendConfirmationEmailDirect(payload) {
     const data = await res.json();
 
     if (!res.ok) {
-      console.warn('[Resend] API Response Error:', data);
+      console.warn('[Resend] Direct API Response Error:', data);
       return { success: false, error: data.message || 'Resend email delivery failed', data };
     }
 
-    console.log('[Resend] Email Dispatch Successful! Message ID:', data.id);
+    console.log('[Resend] Direct Resend API Dispatch Successful! ID:', data.id);
     return { success: true, messageId: data.id, data };
   } catch (err) {
-    console.error('[Resend] Direct Resend fetch failed:', err);
+    console.error('[Resend] Direct fetch failed:', err);
     return { success: false, error: err.message || 'Network fetch error' };
   }
 }
