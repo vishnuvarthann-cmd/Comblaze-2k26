@@ -1,7 +1,7 @@
 // Resend Email Dispatch Helper (Vercel Serverless & Client-Side Compatible)
 
-const RESEND_API_KEY = import.meta.env.VITE_RESEND_API_KEY || 're_geGQ3Z9b_KwyMp9Pus97L3PVW9NqCSEe4';
-const SENDER_EMAIL = import.meta.env.VITE_SENDER_EMAIL || 'onboarding@resend.dev';
+const RESEND_API_KEY = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_RESEND_API_KEY) || 're_geGQ3Z9b_KwyMp9Pus97L3PVW9NqCSEe4';
+const SENDER_EMAIL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_SENDER_EMAIL) || 'onboarding@resend.dev';
 
 export async function sendConfirmationEmailDirect(payload) {
   if (!payload) {

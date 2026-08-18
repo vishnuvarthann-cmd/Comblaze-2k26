@@ -30,8 +30,9 @@ export default async function handler(req, res) {
   const recipientEmail = Array.isArray(to) ? to[0] : to;
   const recipientName = (registration && registration.name) ? registration.name : 'Participant';
 
-  const gmailUser = process.env.GMAIL_USER || process.env.VITE_GMAIL_USER || process.env.SMTP_USER;
-  const gmailPass = process.env.GMAIL_PASS || process.env.VITE_GMAIL_PASS || process.env.SMTP_PASS;
+  const gmailUser = (process.env.GMAIL_USER || process.env.VITE_GMAIL_USER || process.env.SMTP_USER || '').trim();
+  const rawGmailPass = process.env.GMAIL_PASS || process.env.VITE_GMAIL_PASS || process.env.SMTP_PASS || '';
+  const gmailPass = rawGmailPass.replace(/\s+/g, '');
   const brevoApiKey = process.env.BREVO_API_KEY || process.env.VITE_BREVO_API_KEY;
   const resendApiKey = process.env.VITE_RESEND_API_KEY || process.env.RESEND_API_KEY || 're_geGQ3Z9b_KwyMp9Pus97L3PVW9NqCSEe4';
   const senderEmail = process.env.VITE_SENDER_EMAIL || process.env.SENDER_EMAIL || 'onboarding@resend.dev';
