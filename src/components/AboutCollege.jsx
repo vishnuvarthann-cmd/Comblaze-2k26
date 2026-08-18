@@ -37,7 +37,7 @@ export default function AboutCollege() {
               <div className="p-4 rounded-2xl glass-panel-luxury border border-slate-800 flex items-start gap-3">
                 <Award className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="text-sm font-bold text-white">NAAC & AICTE Approved</h4>
+                  <h4 className="text-sm font-bold text-white">AICTE Approved</h4>
                   <p className="text-xs text-slate-400">Recognized technical excellence</p>
                 </div>
               </div>
