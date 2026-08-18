@@ -75,17 +75,29 @@ export async function fetchEvents() {
  * Fetch single event by slug STRICTLY from Supabase DB
  */
 export async function fetchEventBySlug(slug) {
-  try {
-    const { data, error } = await supabase
-      .from('events')
-      .select('*')
-      .or(`slug.eq.${slug},id.eq.${slug}`)
-      .single();
+  if (!slug) return null;
 
-    if (!error && data) {
-      const { data: coords } = await supabase.from('coordinators').select('*').eq('event_id', data.id);
+  const rawSlug = decodeURIComponent(slug).trim();
+  const hyphenatedSlug = rawSlug.toLowerCase().replace(/\s+/g, '-').replace(/_/g, '-');
+  const spaceSlug = rawSlug.toLowerCase().replace(/-/g, ' ');
+
+  try {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(rawSlug);
+    
+    let query = supabase.from('events').select('*');
+    if (isUuid) {
+      query = query.or(`id.eq.${rawSlug},slug.eq.${hyphenatedSlug}`);
+    } else {
+      query = query.or(`slug.ilike.${hyphenatedSlug},slug.ilike.${rawSlug},slug.ilike.${spaceSlug},name.ilike.%${hyphenatedSlug.replace(/-/g, '%')}%`);
+    }
+
+    const { data, error } = await query.limit(1);
+
+    if (!error && data && data.length > 0) {
+      const foundEvent = data[0];
+      const { data: coords } = await supabase.from('coordinators').select('*').eq('event_id', foundEvent.id);
       return normalizeEvent({
-        ...data,
+        ...foundEvent,
         coordinators: coords || []
       });
     }
@@ -93,7 +105,19 @@ export async function fetchEventBySlug(slug) {
     console.warn('[Supabase] fetchEventBySlug error:', err);
   }
 
-  const localEvent = EVENTS.find(e => e.slug === slug || e.id === slug);
+  const localEvent = EVENTS.find(e => {
+    const eSlug = (e.slug || '').toLowerCase();
+    const eId = (e.id || '').toLowerCase();
+    const eName = (e.name || '').toLowerCase();
+    return (
+      eSlug === hyphenatedSlug ||
+      eSlug === rawSlug.toLowerCase() ||
+      eId === hyphenatedSlug ||
+      eId === rawSlug.toLowerCase() ||
+      eName.includes(hyphenatedSlug.replace(/-/g, ' '))
+    );
+  });
+
   return normalizeEvent(localEvent || null);
 }
 
