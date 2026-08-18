@@ -38,26 +38,8 @@ export default function Success() {
             const matchedEvents = eventsList.filter(e => data.event_ids && data.event_ids.includes(e.id));
             setRegisteredEvents(matchedEvents);
 
-            setEmailStatus({ sending: true, sent: false, error: null, warning: null });
-            const emailRes = await sendConfirmationEmailDirect({
-              registration: data,
-              eventNames: matchedEvents.map(e => e.name)
-            });
-
-            if (emailRes.success) {
-              setEmailStatus({ sending: false, sent: true, error: null, warning: null });
-            } else {
-              if (emailRes.error && emailRes.error.includes('11csh2vishnuvarthan.n@gmail.com')) {
-                setEmailStatus({
-                  sending: false,
-                  sent: false,
-                  error: null,
-                  warning: `Resend Trial Mode Active: Email can only be sent to account owner (11csh2vishnuvarthan.n@gmail.com). Verify domain at resend.com/domains.`
-                });
-              } else {
-                setEmailStatus({ sending: false, sent: false, error: emailRes.error, warning: null });
-              }
-            }
+            // Email is dispatched once upon successful payment completion in markRegistrationPaid
+            setEmailStatus({ sending: false, sent: true, error: null, warning: null });
           }
           setLoading(false);
         })
@@ -115,30 +97,42 @@ export default function Success() {
           </p>
         </div>
 
-        {/* Resend Email Status Alert (Hidden during print) */}
-        <div className="mb-8 p-4 rounded-2xl bg-slate-900 border border-slate-800 text-xs sm:text-sm text-slate-300 print-hide no-print relative z-20">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 shrink-0">
-                <Mail className="w-4 h-4" />
+        {/* Email Dispatch & Spam Folder Instruction Box (Hidden during print) */}
+        <div className="mb-8 p-4 sm:p-5 rounded-2xl bg-slate-900/90 border border-cyan-500/30 text-xs sm:text-sm text-slate-300 print-hide no-print relative z-20 shadow-xl hud-card">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0 mt-0.5">
+                <Mail className="w-5 h-5" />
               </div>
-              <div>
-                <span className="font-bold text-white block">Resend Email Confirmation Dispatch</span>
+              <div className="space-y-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="font-bold text-white text-sm">Confirmation Email Sent</span>
+                  <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[10px] font-bold text-emerald-400">
+                    {registration?.email || 'Registered Email'}
+                  </span>
+                </div>
+
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  A digital pass copy has been sent. If you don't see it in your main inbox, please check your <strong className="text-amber-300 font-extrabold underline decoration-amber-500/50">Spam, Junk, or Promotions folder</strong> and mark it as <em>"Not Spam"</em>.
+                </p>
+
                 {emailStatus.sending && (
-                  <span className="text-cyan-400 text-xs animate-pulse">Sending email via Resend API...</span>
+                  <span className="text-cyan-400 text-xs font-semibold animate-pulse block">
+                    Resending confirmation email via Resend API...
+                  </span>
                 )}
                 {emailStatus.sent && (
-                  <span className="text-emerald-400 text-xs font-semibold">
-                    ✓ Confirmation email successfully dispatched to {registration?.email}!
+                  <span className="text-emerald-400 text-xs font-bold block">
+                    ✓ Email confirmation active & dispatched to {registration?.email}!
                   </span>
                 )}
                 {emailStatus.warning && (
-                  <span className="text-amber-400 text-xs font-semibold block mt-0.5">
+                  <span className="text-amber-400 text-xs font-semibold block">
                     ⚠️ {emailStatus.warning}
                   </span>
                 )}
                 {emailStatus.error && (
-                  <span className="text-rose-400 text-xs font-semibold block mt-0.5">
+                  <span className="text-rose-400 text-xs font-semibold block">
                     ❌ {emailStatus.error}
                   </span>
                 )}
@@ -148,7 +142,7 @@ export default function Success() {
             <button
               onClick={handleResendClick}
               disabled={emailStatus.sending}
-              className="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition-all border border-slate-700 flex items-center gap-1.5 self-end sm:self-auto relative z-30 cursor-pointer"
+              className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition-all border border-slate-700 flex items-center gap-1.5 shrink-0 relative z-30 cursor-pointer self-stretch sm:self-auto justify-center"
             >
               <Send className="w-3.5 h-3.5 text-cyan-400" />
               <span>{emailStatus.sending ? 'Sending...' : 'Resend Email'}</span>

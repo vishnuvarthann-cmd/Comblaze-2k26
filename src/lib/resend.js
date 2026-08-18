@@ -3,13 +3,22 @@
 const RESEND_API_KEY = import.meta.env.VITE_RESEND_API_KEY || 're_geGQ3Z9b_KwyMp9Pus97L3PVW9NqCSEe4';
 const SENDER_EMAIL = import.meta.env.VITE_SENDER_EMAIL || 'onboarding@resend.dev';
 
-export async function sendConfirmationEmailDirect({ registration, eventNames = [] }) {
+export async function sendConfirmationEmailDirect(payload) {
+  if (!payload) {
+    console.warn('[Resend] Cannot send email: missing payload');
+    return { success: false, error: 'Missing registration payload' };
+  }
+
+  const registration = payload.registration || payload;
   if (!registration || !registration.email) {
     console.warn('[Resend] Cannot send email: missing registration or recipient email');
     return { success: false, error: 'Missing registration recipient email' };
   }
 
-  const registeredEventsText = eventNames.length > 0 ? eventNames.join(' & ') : '2 Selected Symposium Events';
+  const rawEventNames = payload.eventNames || registration.event_names || [];
+  const registeredEventsText = Array.isArray(rawEventNames) && rawEventNames.length > 0 
+    ? rawEventNames.join(' & ') 
+    : '2 Selected Symposium Events';
   const refCode = (registration.id || 'COMBLAZE').slice(0, 8).toUpperCase();
   const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(registration.id)}&color=0f172a&bgcolor=ffffff`;
 

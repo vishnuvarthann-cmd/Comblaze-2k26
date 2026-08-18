@@ -1,129 +1,185 @@
 import React, { useEffect, useRef } from 'react';
+import * as THREE from 'three';
 
 export default function ParticleSwarmBackground() {
-  const canvasRef = useRef(null);
+  const containerRef = useRef(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    const container = containerRef.current;
+    if (!container) return;
 
     let animationFrameId;
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
+    let renderer, scene, camera, mesh;
 
-    const handleResize = () => {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-    };
+    try {
+      scene = new THREE.Scene();
+      scene.fog = new THREE.FogExp2(0x02040a, 0.008);
 
-    window.addEventListener('resize', handleResize);
+      camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+      camera.position.set(0, 0, 80);
 
-    const particles = [];
-    const numParticles = Math.min(Math.floor(width / 12), 100);
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setClearColor(0x02040a, 1);
+      container.appendChild(renderer.domElement);
 
-    for (let i = 0; i < numParticles; i++) {
-      particles.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.8,
-        vy: (Math.random() - 0.5) * 0.8,
-        radius: Math.random() * 2 + 1,
-        color: Math.random() > 0.5 ? 'rgba(0, 243, 255, ' : 'rgba(168, 85, 247, ',
-        alpha: Math.random() * 0.5 + 0.2
-      });
-    }
+      const count = 8000;
+      const geometry = new THREE.TetrahedronGeometry(0.22);
+      const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
 
-    let mouseX = width / 2;
-    let mouseY = height / 2;
+      mesh = new THREE.InstancedMesh(geometry, material, count);
+      scene.add(mesh);
 
-    const handleMouseMove = (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-    };
+      const dummy = new THREE.Object3D();
+      const target = new THREE.Vector3();
+      const color = new THREE.Color();
 
-    window.addEventListener('mousemove', handleMouseMove);
-
-    const render = () => {
-      ctx.clearRect(0, 0, width, height);
-
-      // Cyber Grid Lines
-      ctx.strokeStyle = 'rgba(0, 243, 255, 0.03)';
-      ctx.lineWidth = 1;
-      const gridSize = 60;
-      for (let x = 0; x < width; x += gridSize) {
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, height);
-        ctx.stroke();
-      }
-      for (let y = 0; y < height; y += gridSize) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(width, y);
-        ctx.stroke();
+      const currentPositions = [];
+      for (let i = 0; i < count; i++) {
+        currentPositions.push(new THREE.Vector3((Math.random() - 0.5) * 100, (Math.random() - 0.5) * 100, (Math.random() - 0.5) * 100));
       }
 
-      // Draw Particles and Cyber Constellation Lines
-      for (let i = 0; i < particles.length; i++) {
-        const p = particles[i];
-        p.x += p.vx;
-        p.y += p.vy;
+      const PARAMS = { n: 3, l: 2, m: 1, scale: 22, spin: 0.3, breathe: 0.4, jitter: 0.25 };
+      const clock = new THREE.Clock();
 
-        if (p.x < 0 || p.x > width) p.vx *= -1;
-        if (p.y < 0 || p.y > height) p.vy *= -1;
+      const animate = () => {
+        animationFrameId = requestAnimationFrame(animate);
 
-        ctx.fillStyle = p.color + p.alpha + ')';
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fill();
+        const time = clock.getElapsedTime();
+        scene.rotation.y = time * 0.05;
 
-        for (let j = i + 1; j < particles.length; j++) {
-          const p2 = particles[j];
-          const dx = p.x - p2.x;
-          const dy = p.y - p2.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
+        for (let i = 0; i < count; i++) {
+          const n = 3;
+          const lMax = 2;
+          const mAbs = 1;
+          const scale = PARAMS.scale;
+          const spin = PARAMS.spin;
+          const breathe = PARAMS.breathe;
+          const cloudJitter = PARAMS.jitter;
 
-          if (dist < 110) {
-            ctx.strokeStyle = `rgba(0, 243, 255, ${0.12 * (1 - dist / 110)})`;
-            ctx.lineWidth = 0.6;
-            ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(p2.x, p2.y);
-            ctx.stroke();
+          const a0 = scale * 0.5;
+          const TAU = Math.PI * 2;
+
+          const h1 = Math.sin(i * 12.9898 + 78.233) * 43758.5453;
+          const rand1 = h1 - Math.floor(h1);
+          const h2 = Math.sin(i * 39.3468 + 11.135) * 24634.6345;
+          const rand2 = h2 - Math.floor(h2);
+          const h3 = Math.sin(i * 93.9898 + 47.233) * 95734.5453;
+          const rand3 = h3 - Math.floor(h3);
+
+          const u = (i + 1) / count;
+          const baseR = -Math.log(1.0 - u * 0.999);
+          const radialPower = (n * n) - (n - 1 - lMax);
+          let r = baseR * a0 * (n * n) * 0.5 / Math.max(1, radialPower * 0.3);
+
+          const nodeCount = n - lMax - 1;
+          const nodeMod = nodeCount > 0
+            ? Math.abs(Math.sin((r / (a0 * n)) * Math.PI * (nodeCount + 1)))
+            : 1.0;
+          r *= 0.6 + 0.8 * nodeMod;
+
+          const phi = rand1 * TAU + time * spin;
+          let theta = Math.acos(1.0 - 2.0 * rand2);
+
+          const cosT = Math.cos(theta);
+          const sinT = Math.sin(theta);
+          let lobe;
+          if (lMax === 0) {
+            lobe = 1.0;
+          } else if (lMax === 1) {
+            if (mAbs === 0) lobe = cosT * cosT;
+            else lobe = sinT * sinT * Math.cos(phi) * Math.cos(phi);
+          } else if (lMax === 2) {
+            if (mAbs === 0) {
+              const c2 = 3.0 * cosT * cosT - 1.0;
+              lobe = c2 * c2 * 0.25;
+            } else if (mAbs === 1) {
+              lobe = sinT * sinT * cosT * cosT * 4.0;
+            } else {
+              lobe = sinT * sinT * sinT * sinT * Math.cos(2.0 * phi) * Math.cos(2.0 * phi);
+            }
+          } else {
+            const bands = Math.cos(theta * lMax);
+            lobe = bands * bands;
+            if (mAbs > 0) {
+              const az = Math.cos(mAbs * phi);
+              lobe *= az * az;
+            }
           }
+
+          const lobeWeight = 0.15 + 0.85 * Math.min(1.0, lobe);
+          r *= lobeWeight;
+
+          const breath = 1.0 + breathe * 0.15 * Math.sin(time * 1.2 + r * 0.05);
+          r *= breath;
+
+          const jitter = 1.0 + (rand3 - 0.5) * cloudJitter;
+          r *= jitter;
+
+          const sinTheta = Math.sin(theta);
+          const x = r * sinTheta * Math.cos(phi);
+          const y = r * Math.cos(theta);
+          const z = r * sinTheta * Math.sin(phi);
+
+          target.set(x, y, z);
+
+          const orbitalHue = (n * 0.13 + lMax * 0.21 + mAbs * 0.07) % 1.0;
+          const phaseShift = mAbs > 0 ? 0.5 + 0.5 * Math.cos(mAbs * phi) : 1.0;
+          const lightness = 0.25 + 0.45 * Math.min(1.0, lobe) * phaseShift;
+          const saturation = 0.7 + 0.3 * nodeMod;
+          color.setHSL(orbitalHue, saturation, lightness);
+
+          currentPositions[i].lerp(target, 0.1);
+          dummy.position.copy(currentPositions[i]);
+          dummy.updateMatrix();
+          mesh.setMatrixAt(i, dummy.matrix);
+          mesh.setColorAt(i, color);
         }
 
-        const mdx = p.x - mouseX;
-        const mdy = p.y - mouseY;
-        const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
-        if (mdist < 140) {
-          ctx.strokeStyle = `rgba(245, 158, 11, ${0.2 * (1 - mdist / 140)})`;
-          ctx.lineWidth = 0.8;
-          ctx.beginPath();
-          ctx.moveTo(p.x, p.y);
-          ctx.lineTo(mouseX, mouseY);
-          ctx.stroke();
+        mesh.instanceMatrix.needsUpdate = true;
+        if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+
+        renderer.render(scene, camera);
+      };
+
+      animate();
+
+      const handleResize = () => {
+        if (!renderer || !camera) return;
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      };
+
+      window.addEventListener('resize', handleResize);
+
+      return () => {
+        window.removeEventListener('resize', handleResize);
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        if (renderer && renderer.domElement && container.contains(renderer.domElement)) {
+          container.removeChild(renderer.domElement);
         }
-      }
-
-      animationFrameId = requestAnimationFrame(render);
-    };
-
-    render();
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      window.removeEventListener('mousemove', handleMouseMove);
-      cancelAnimationFrame(animationFrameId);
-    };
+        if (geometry) geometry.dispose();
+        if (material) material.dispose();
+      };
+    } catch (err) {
+      console.warn('ParticleSwarmBackground initialized fallback:', err);
+    }
   }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="fixed inset-0 w-full h-full pointer-events-none z-0 opacity-60 print-hide no-print"
+    <div
+      ref={containerRef}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        width: '100vw',
+        height: '100vh',
+        background: '#02040a',
+        pointerEvents: 'none',
+        zIndex: 0,
+      }}
     />
   );
 }

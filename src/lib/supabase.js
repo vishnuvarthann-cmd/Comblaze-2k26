@@ -182,19 +182,29 @@ export async function markRegistrationPaid(registrationId, paymentResponse) {
  * Fetch Registration by ID STRICTLY from Supabase API
  */
 export async function fetchRegistrationById(idText) {
-  if (!idText) return null;
+  if (!idText || !idText.trim()) return null;
 
-  const { data, error } = await supabase
+  const clean = idText.trim();
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(clean);
+
+  if (isUuid) {
+    const { data, error } = await supabase
+      .from('registrations')
+      .select('*')
+      .eq('id', clean)
+      .single();
+
+    if (!error && data) return data;
+  }
+
+  // Fallback search if idText is a payment_ref, order_id, name, or phone
+  const { data } = await supabase
     .from('registrations')
     .select('*')
-    .eq('id', idText.trim())
-    .single();
+    .or(`name.ilike.%${clean}%,phone.ilike.%${clean}%,email.ilike.%${clean}%,payment_ref.eq.${clean},razorpay_payment_id.eq.${clean}`)
+    .limit(1);
 
-  if (error) {
-    console.warn('[Supabase] fetchRegistrationById error:', error.message);
-    return null;
-  }
-  return data;
+  return (data && data.length > 0) ? data[0] : null;
 }
 
 /**
@@ -204,11 +214,17 @@ export async function searchRegistrations(queryText) {
   if (!queryText || !queryText.trim()) return [];
 
   const cleanQuery = queryText.trim();
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(cleanQuery);
+
+  const filterStr = isUuid
+    ? `name.ilike.%${cleanQuery}%,phone.ilike.%${cleanQuery}%,email.ilike.%${cleanQuery}%,college.ilike.%${cleanQuery}%,id.eq.${cleanQuery}`
+    : `name.ilike.%${cleanQuery}%,phone.ilike.%${cleanQuery}%,email.ilike.%${cleanQuery}%,college.ilike.%${cleanQuery}%`;
 
   const { data, error } = await supabase
     .from('registrations')
     .select('*')
-    .or(`name.ilike.%${cleanQuery}%,phone.ilike.%${cleanQuery}%,id.eq.${cleanQuery}`)
+    .or(filterStr)
+    .order('created_at', { ascending: false })
     .limit(20);
 
   if (error) {
@@ -270,12 +286,28 @@ export async function fetchOrganizingCommittee() {
       .order('display_order', { ascending: true });
 
     if (!error && data && data.length > 0) {
+      const normalized = data.map(m => {
+        const cat = (m.category || '').trim().toLowerCase();
+        const img = (m.image_url && m.image_url.trim() !== '') 
+          ? m.image_url.trim() 
+          : ((m.image && m.image.trim() !== '') ? m.image.trim() : null);
+        return {
+          ...m,
+          name: (m.name || '').trim(),
+          role: (m.role || '').trim(),
+          department: (m.department || '').trim(),
+          category: cat,
+          image_url: img,
+          image: img
+        };
+      });
+
       return {
-        chiefGuests: data.filter(m => m.category === 'chief_guest'),
-        patrons: data.filter(m => m.category === 'patron'),
-        conveners: data.filter(m => m.category === 'convener'),
-        coordinators: data.filter(m => m.category === 'coordinator'),
-        studentLeads: data.filter(m => m.category === 'student_lead')
+        chiefGuests: normalized.filter(m => m.category === 'chief_guest'),
+        patrons: normalized.filter(m => m.category === 'patron'),
+        conveners: normalized.filter(m => m.category === 'convener'),
+        coordinators: normalized.filter(m => m.category === 'coordinator'),
+        studentLeads: normalized.filter(m => m.category.startsWith('student') || m.category === 'student_lead')
       };
     }
   } catch (err) {

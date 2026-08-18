@@ -12,7 +12,7 @@ export const SYMPOSIUM_INFO = {
   time: "08:30 AM - 04:30 PM",
   fee: 250, // Flat ₹250 per participant for 2 events
   maxEventsPerParticipant: 2,
-  totalPrizePool: "₹30,000+",
+  totalPrizePool: "₹10,000+",
   contactEmail: "comblaze2k26@mamce.org",
   contactPhone: "+91 98424 12345 / +91 97890 12345"
 };

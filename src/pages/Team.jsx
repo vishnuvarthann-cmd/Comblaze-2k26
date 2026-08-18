@@ -68,19 +68,28 @@ export default function Team() {
             </div>
 
             <div className="max-w-3xl mx-auto">
-              {chiefGuests.map((guest, idx) => (
-                <div key={idx} className="p-8 sm:p-10 rounded-3xl bg-gradient-to-r from-amber-950/40 via-slate-900 to-cyan-950/40 border-2 border-amber-500/40 text-center shadow-2xl glow-gold-border glass-panel-luxury relative overflow-hidden">
-                  <div className="w-20 h-20 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-300 mx-auto mb-4 shadow-xl shadow-amber-500/25">
-                    <Sparkles className="w-10 h-10" />
+              {chiefGuests.map((guest, idx) => {
+                const img = guest.image_url || guest.image;
+                return (
+                  <div key={idx} className="p-8 sm:p-10 rounded-3xl bg-gradient-to-r from-amber-950/40 via-slate-900 to-cyan-950/40 border-2 border-amber-500/40 text-center shadow-2xl glow-gold-border glass-panel-luxury relative overflow-hidden flex flex-col items-center">
+                    {img ? (
+                      <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden border-2 border-amber-500/40 shadow-xl mb-4 shrink-0">
+                        <img src={img} alt={guest.name} className="w-full h-full object-cover" />
+                      </div>
+                    ) : (
+                      <div className="w-20 h-20 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-300 mx-auto mb-4 shadow-xl shadow-amber-500/25">
+                        <Sparkles className="w-10 h-10" />
+                      </div>
+                    )}
+                    <span className="px-3.5 py-1 rounded-full bg-amber-500/20 border border-amber-500/40 text-xs font-extrabold text-amber-300 uppercase tracking-widest inline-block mb-3">
+                      Inaugural Keynote Speaker
+                    </span>
+                    <h3 className="text-2xl sm:text-3xl font-black text-white font-orbitron">{guest.name}</h3>
+                    <p className="text-sm font-bold text-amber-300 uppercase tracking-wider mt-1">{guest.role}</p>
+                    <p className="text-xs sm:text-sm text-slate-300 mt-2 font-medium max-w-xl mx-auto">{guest.department}</p>
                   </div>
-                  <span className="px-3.5 py-1 rounded-full bg-amber-500/20 border border-amber-500/40 text-xs font-extrabold text-amber-300 uppercase tracking-widest inline-block mb-3">
-                    Inaugural Keynote Speaker
-                  </span>
-                  <h3 className="text-2xl sm:text-3xl font-black text-white font-orbitron">{guest.name}</h3>
-                  <p className="text-sm font-bold text-amber-300 uppercase tracking-wider mt-1">{guest.role}</p>
-                  <p className="text-xs sm:text-sm text-slate-300 mt-2 font-medium max-w-xl mx-auto">{guest.department}</p>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
@@ -94,16 +103,25 @@ export default function Team() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
-              {patrons.map((patron, idx) => (
-                <div key={idx} className="p-8 rounded-3xl bg-slate-900/90 border border-cyan-500/30 text-center shadow-2xl hover:border-cyan-400 transition-all duration-300 glass-panel-luxury hud-card">
-                  <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 mx-auto mb-4 shadow-lg shadow-amber-500/20">
-                    <Award className="w-7 h-7" />
+              {patrons.map((patron, idx) => {
+                const img = patron.image_url || patron.image;
+                return (
+                  <div key={idx} className="p-8 rounded-3xl bg-slate-900/90 border border-cyan-500/30 text-center shadow-2xl hover:border-cyan-400 transition-all duration-300 glass-panel-luxury hud-card flex flex-col items-center">
+                    {img ? (
+                      <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-amber-500/40 shadow-xl mb-4 shrink-0">
+                        <img src={img} alt={patron.name} className="w-full h-full object-cover" />
+                      </div>
+                    ) : (
+                      <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 mx-auto mb-4 shadow-lg shadow-amber-500/20">
+                        <Award className="w-7 h-7" />
+                      </div>
+                    )}
+                    <h3 className="text-xl font-black text-white font-orbitron">{patron.name}</h3>
+                    <p className="text-xs font-bold text-amber-300 uppercase tracking-wider mt-1">{patron.role}</p>
+                    <p className="text-xs text-slate-400 mt-1 font-medium">{patron.department}</p>
                   </div>
-                  <h3 className="text-xl font-black text-white font-orbitron">{patron.name}</h3>
-                  <p className="text-xs font-bold text-amber-300 uppercase tracking-wider mt-1">{patron.role}</p>
-                  <p className="text-xs text-slate-400 mt-1 font-medium">{patron.department}</p>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
@@ -116,32 +134,43 @@ export default function Team() {
               <h2 className="text-xl sm:text-2xl font-black text-white font-orbitron mt-1">Symposium Convener</h2>
             </div>
 
-            <div className="max-w-2xl mx-auto p-8 sm:p-10 rounded-3xl bg-slate-900/90 border border-cyan-500/40 text-center shadow-2xl glow-cyan-border glass-panel-luxury hud-card">
-              <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/40 flex items-center justify-center text-cyan-400 mx-auto mb-4 shadow-lg shadow-cyan-500/20">
-                <GraduationCap className="w-8 h-8" />
-              </div>
-              <span className="px-3 py-1 rounded-full bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 text-[10px] font-black uppercase tracking-widest">
-                DEPARTMENT HEAD
-              </span>
-              <h3 className="text-2xl sm:text-3xl font-black text-white font-orbitron mt-2">{conveners[0].name}</h3>
-              <p className="text-sm font-bold text-cyan-300 mt-1">{conveners[0].role}</p>
-              <p className="text-xs text-slate-400 mt-0.5">{conveners[0].department}</p>
+            {conveners.map((conv, idx) => {
+              const img = conv.image_url || conv.image;
+              return (
+                <div key={idx} className="max-w-2xl mx-auto p-8 sm:p-10 rounded-3xl bg-slate-900/90 border border-cyan-500/40 text-center shadow-2xl glow-cyan-border glass-panel-luxury hud-card flex flex-col items-center mb-6">
+                  {img ? (
+                    <div className="w-24 h-24 rounded-2xl overflow-hidden border-2 border-cyan-500/40 shadow-xl mb-4 shrink-0">
+                      <img src={img} alt={conv.name} className="w-full h-full object-cover" />
+                    </div>
+                  ) : (
+                    <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/40 flex items-center justify-center text-cyan-400 mx-auto mb-4 shadow-lg shadow-cyan-500/20">
+                      <GraduationCap className="w-8 h-8" />
+                    </div>
+                  )}
+                  <span className="px-3 py-1 rounded-full bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 text-[10px] font-black uppercase tracking-widest">
+                    FACULTY CONVENER
+                  </span>
+                  <h3 className="text-2xl sm:text-3xl font-black text-white font-orbitron mt-2">{conv.name}</h3>
+                  <p className="text-sm font-bold text-cyan-300 mt-1">{conv.role}</p>
+                  <p className="text-xs text-slate-400 mt-0.5">{conv.department}</p>
 
-              <div className="flex flex-wrap items-center justify-center gap-3 mt-6 pt-4 border-t border-slate-800">
-                {conveners[0].phone && (
-                  <a href={`tel:${conveners[0].phone}`} className="text-xs font-bold text-slate-200 hover:text-cyan-400 flex items-center gap-2 bg-slate-950 px-4 py-2 rounded-xl border border-slate-800 transition-colors cursor-pointer">
-                    <Phone className="w-4 h-4 text-cyan-400" />
-                    <span>{conveners[0].phone}</span>
-                  </a>
-                )}
-                {conveners[0].email && (
-                  <a href={`mailto:${conveners[0].email}`} className="text-xs font-bold text-slate-200 hover:text-purple-400 flex items-center gap-2 bg-slate-950 px-4 py-2 rounded-xl border border-slate-800 transition-colors cursor-pointer">
-                    <Mail className="w-4 h-4 text-purple-400" />
-                    <span>{conveners[0].email}</span>
-                  </a>
-                )}
-              </div>
-            </div>
+                  <div className="flex flex-wrap items-center justify-center gap-3 mt-6 pt-4 border-t border-slate-800 w-full">
+                    {conv.phone && (
+                      <a href={`tel:${conv.phone}`} className="text-xs font-bold text-slate-200 hover:text-cyan-400 flex items-center gap-2 bg-slate-950 px-4 py-2 rounded-xl border border-slate-800 transition-colors cursor-pointer">
+                        <Phone className="w-4 h-4 text-cyan-400" />
+                        <span>{conv.phone}</span>
+                      </a>
+                    )}
+                    {conv.email && (
+                      <a href={`mailto:${conv.email}`} className="text-xs font-bold text-slate-200 hover:text-purple-400 flex items-center gap-2 bg-slate-950 px-4 py-2 rounded-xl border border-slate-800 transition-colors cursor-pointer">
+                        <Mail className="w-4 h-4 text-purple-400" />
+                        <span>{conv.email}</span>
+                      </a>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
 
@@ -154,22 +183,31 @@ export default function Team() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
-              {coordinators.map((item, idx) => (
-                <div key={idx} className="p-6 sm:p-8 rounded-3xl bg-slate-900/90 border border-slate-800 text-center shadow-2xl hover:border-purple-500/40 transition-all duration-300 glass-panel-luxury">
-                  <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 mx-auto mb-3">
-                    <ShieldCheck className="w-6 h-6" />
+              {coordinators.map((item, idx) => {
+                const img = item.image_url || item.image;
+                return (
+                  <div key={idx} className="p-6 sm:p-8 rounded-3xl bg-slate-900/90 border border-slate-800 text-center shadow-2xl hover:border-purple-500/40 transition-all duration-300 glass-panel-luxury flex flex-col items-center">
+                    {img ? (
+                      <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-purple-500/40 shadow-xl mb-3 shrink-0">
+                        <img src={img} alt={item.name} className="w-full h-full object-cover" />
+                      </div>
+                    ) : (
+                      <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 mx-auto mb-3">
+                        <ShieldCheck className="w-6 h-6" />
+                      </div>
+                    )}
+                    <h4 className="text-lg font-black text-white font-orbitron">{item.name}</h4>
+                    <p className="text-xs font-bold text-purple-300 mt-1">{item.role}</p>
+                    <p className="text-xs text-slate-400 mb-4">{item.department}</p>
+                    {item.phone && (
+                      <a href={`tel:${item.phone}`} className="inline-flex items-center gap-2 text-xs text-slate-200 hover:text-cyan-400 font-bold bg-slate-950 px-4 py-2 rounded-xl border border-slate-800 transition-colors cursor-pointer">
+                        <Phone className="w-3.5 h-3.5 text-cyan-400" />
+                        <span>{item.phone}</span>
+                      </a>
+                    )}
                   </div>
-                  <h4 className="text-lg font-black text-white font-orbitron">{item.name}</h4>
-                  <p className="text-xs font-bold text-purple-300 mt-1">{item.role}</p>
-                  <p className="text-xs text-slate-400 mb-4">{item.department}</p>
-                  {item.phone && (
-                    <a href={`tel:${item.phone}`} className="inline-flex items-center gap-2 text-xs text-slate-200 hover:text-cyan-400 font-bold bg-slate-950 px-4 py-2 rounded-xl border border-slate-800 transition-colors cursor-pointer">
-                      <Phone className="w-3.5 h-3.5 text-cyan-400" />
-                      <span>{item.phone}</span>
-                    </a>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
@@ -183,22 +221,31 @@ export default function Team() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-6xl mx-auto">
-              {studentLeads.map((lead, idx) => (
-                <div key={idx} className="p-6 sm:p-8 rounded-3xl bg-slate-900/90 border border-slate-800 text-center shadow-2xl hover:border-amber-500/40 transition-all duration-300 glass-panel-luxury">
-                  <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 mx-auto mb-3">
-                    <Users className="w-6 h-6" />
+              {studentLeads.map((lead, idx) => {
+                const img = lead.image_url || lead.image;
+                return (
+                  <div key={idx} className="p-6 sm:p-8 rounded-3xl bg-slate-900/90 border border-slate-800 text-center shadow-2xl hover:border-amber-500/40 transition-all duration-300 glass-panel-luxury flex flex-col items-center">
+                    {img ? (
+                      <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-amber-500/40 shadow-xl mb-3 shrink-0">
+                        <img src={img} alt={lead.name} className="w-full h-full object-cover" />
+                      </div>
+                    ) : (
+                      <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 mx-auto mb-3">
+                        <Users className="w-6 h-6" />
+                      </div>
+                    )}
+                    <span className="text-[10px] font-mono font-black text-amber-400 uppercase tracking-widest block mb-1">{lead.role}</span>
+                    <h4 className="text-xl font-black text-white font-orbitron">{lead.name}</h4>
+                    <p className="text-xs text-slate-400 mb-4">{lead.department || lead.year || 'Department of CSE'}</p>
+                    {lead.phone && (
+                      <a href={`tel:${lead.phone}`} className="inline-flex items-center gap-2 text-xs text-slate-200 hover:text-cyan-400 font-bold bg-slate-950 px-4 py-2 rounded-xl border border-slate-800 transition-colors cursor-pointer">
+                        <Phone className="w-3.5 h-3.5 text-cyan-400" />
+                        <span>{lead.phone}</span>
+                      </a>
+                    )}
                   </div>
-                  <span className="text-[10px] font-mono font-black text-amber-400 uppercase tracking-widest block mb-1">{lead.role}</span>
-                  <h4 className="text-xl font-black text-white font-orbitron">{lead.name}</h4>
-                  <p className="text-xs text-slate-400 mb-4">{lead.year || 'Department of CSE'}</p>
-                  {lead.phone && (
-                    <a href={`tel:${lead.phone}`} className="inline-flex items-center gap-2 text-xs text-slate-200 hover:text-cyan-400 font-bold bg-slate-950 px-4 py-2 rounded-xl border border-slate-800 transition-colors cursor-pointer">
-                      <Phone className="w-3.5 h-3.5 text-cyan-400" />
-                      <span>{lead.phone}</span>
-                    </a>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}

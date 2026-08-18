@@ -5,31 +5,27 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-async function testPaid() {
-  console.log('Testing insert with lowercase payment_status paid...');
-  const payload = {
-    name: 'Test Participant Paid',
-    college: 'M.A.M. College of Engineering',
-    department: 'Computer Science & Engineering',
-    year: 'III Year',
-    phone: '9876543210',
-    email: 'testpaid@example.com',
-    event_ids: ['a1111111-1111-4111-a111-111111111111', 'a2222222-2222-4222-a222-222222222222'],
-    event_names: ['Code Battle', 'Paper Presentation'],
-    payment_status: 'paid',
-    payment_ref: 'pay_test123'
-  };
+async function testSearch(q) {
+  const clean = q.trim();
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(clean);
+  const filter = isUuid
+    ? `name.ilike.%${clean}%,phone.ilike.%${clean}%,email.ilike.%${clean}%,college.ilike.%${clean}%,id.eq.${clean}`
+    : `name.ilike.%${clean}%,phone.ilike.%${clean}%,email.ilike.%${clean}%,college.ilike.%${clean}%`;
 
+  console.log(`Testing search for: "${clean}"`);
   const { data, error } = await supabase
     .from('registrations')
-    .insert([payload])
-    .select();
+    .select('*')
+    .or(filter);
 
-  if (error) {
-    console.error('SUPABASE INSERT ERROR:', JSON.stringify(error, null, 2));
-  } else {
-    console.log('SUPABASE INSERT PAID SUCCESS! Data:', data);
-  }
+  if (error) console.error('ERROR:', error);
+  else console.log(`SUCCESS (${data.length} records):`, data.map(d => ({ name: d.name, phone: d.phone, college: d.college })));
 }
 
-testPaid();
+async function main() {
+  await testSearch('Gayathri');
+  await testSearch('63939');
+  await testSearch('NSCET');
+}
+
+main();

@@ -149,7 +149,7 @@ export default function AdminCheckin() {
     if (passkeyInput === 'mamce2026' || passkeyInput === 'admin' || passkeyInput === '1234') {
       setAuthenticated(true);
     } else {
-      alert('Invalid Staff Passkey. (Default: mamce2026)');
+      alert('Invalid Staff Passkey. Access denied.');
     }
   };
 
@@ -185,7 +185,7 @@ export default function AdminCheckin() {
               <div className="relative">
                 <input
                   type="password"
-                  placeholder="Enter Passkey (e.g. mamce2026)"
+                  placeholder="Enter Staff Passkey"
                   value={passkeyInput}
                   onChange={(e) => setPasskeyInput(e.target.value)}
                   className="w-full px-4 py-3.5 bg-slate-950 border border-amber-500/30 rounded-2xl text-sm text-white focus:outline-none focus:border-amber-400 text-center tracking-widest font-mono shadow-inner placeholder-slate-500"
@@ -200,13 +200,6 @@ export default function AdminCheckin() {
                 <span>Unlock Duty Terminal</span>
               </button>
             </form>
-
-            <button
-              onClick={() => setAuthenticated(true)}
-              className="text-xs font-mono text-cyan-400 underline hover:text-cyan-300 transition-colors cursor-pointer"
-            >
-              Demo Staff Access (Instant Unlock)
-            </button>
           </motion.div>
         </main>
 

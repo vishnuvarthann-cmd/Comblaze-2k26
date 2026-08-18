@@ -6,7 +6,7 @@ export default function Highlights() {
   const highlightsList = [
     {
       icon: Trophy,
-      title: "₹30,000+ Prize Pool",
+      title: "₹10,000+ Prize Pool",
       desc: "Cash prizes, championship trophies, and merit certificates for top winners across all 7 events.",
       color: "text-amber-400 border-amber-500/30 bg-amber-500/10"
     },

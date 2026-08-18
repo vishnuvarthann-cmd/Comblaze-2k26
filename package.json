@@ -27,9 +27,11 @@
     "react-dom": "^19.2.8",
     "react-router-dom": "^7.18.2",
     "styled-components": "^6.5.2",
+    "swiper": "^14.1.0",
     "tailwindcss": "^4.3.3",
     "three": "^0.185.1",
-    "three-stdlib": "^2.36.1"
+    "three-stdlib": "^2.36.1",
+    "threejs-components": "^0.0.30"
   },
   "devDependencies": {
     "@types/react": "^19.2.17",
