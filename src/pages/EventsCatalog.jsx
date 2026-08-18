@@ -59,7 +59,7 @@ export default function EventsCatalog() {
     <div className="bg-slate-950 text-slate-100 min-h-screen font-sans flex flex-col justify-between">
       <Navbar />
 
-      <main className="pt-28 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex-1 relative z-10">
+      <main className="pt-36 sm:pt-44 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex-1 relative z-20">
         
         {/* Page Header */}
         <div className="mb-10 text-center max-w-3xl mx-auto">

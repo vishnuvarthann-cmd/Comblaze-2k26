@@ -104,9 +104,21 @@ export async function createRegistration(formData) {
   const liveEvents = await fetchEvents();
   const eventsList = liveEvents.length > 0 ? liveEvents : EVENTS;
 
-  const selectedEventNames = eventsList
-    .filter(e => formData.event_ids && formData.event_ids.includes(e.id))
-    .map(e => e.name);
+  const resolvedEventIds = [];
+  const selectedEventNames = [];
+
+  if (Array.isArray(formData.event_ids)) {
+    formData.event_ids.forEach(idOrSlug => {
+      const found = eventsList.find(e => e.id === idOrSlug || e.slug === idOrSlug);
+      if (found) {
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(found.id);
+        if (isUuid) {
+          resolvedEventIds.push(found.id);
+        }
+        selectedEventNames.push(found.name.trim());
+      }
+    });
+  }
 
   const payload = {
     name: formData.name,
@@ -115,7 +127,7 @@ export async function createRegistration(formData) {
     college: formData.college,
     department: formData.department,
     year: formData.year,
-    event_ids: formData.event_ids,
+    event_ids: resolvedEventIds,
     event_names: selectedEventNames,
     payment_status: 'pending',
     checked_in: false

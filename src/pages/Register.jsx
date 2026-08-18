@@ -44,18 +44,24 @@ export default function Register() {
 
   const toggleEventSelection = (eventId) => {
     setErrorMsg('');
-    if (selectedEventIds.includes(eventId)) {
-      setSelectedEventIds(selectedEventIds.filter(id => id !== eventId));
+    const targetEvent = eventsList.find(e => e.id === eventId || e.slug === eventId);
+    const targetId = targetEvent ? targetEvent.id : eventId;
+    const targetSlug = targetEvent ? targetEvent.slug : eventId;
+
+    const isAlreadySelected = selectedEventIds.some(id => id === targetId || id === targetSlug);
+
+    if (isAlreadySelected) {
+      setSelectedEventIds(selectedEventIds.filter(id => id !== targetId && id !== targetSlug));
     } else {
       if (selectedEventIds.length >= 2) {
         setErrorMsg('You can select a maximum of 2 events for the ₹250 flat fee.');
         return;
       }
-      setSelectedEventIds([...selectedEventIds, eventId]);
+      setSelectedEventIds([...selectedEventIds, targetId]);
     }
   };
 
-  const selectedEventsObjects = eventsList.filter(e => selectedEventIds.includes(e.id));
+  const selectedEventsObjects = eventsList.filter(e => selectedEventIds.some(id => id === e.id || id === e.slug));
   const maxTeamCapacity = Math.max(...selectedEventsObjects.map(e => e.maxTeamSize || 1), 1);
   const requiresTeamInput = maxTeamCapacity > 1;
 
@@ -131,23 +137,22 @@ export default function Register() {
     <div className="bg-slate-950 text-slate-100 min-h-screen font-sans flex flex-col justify-between">
       <Navbar />
 
-      <main className="pt-28 pb-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex-1">
+      <main className="pt-36 sm:pt-44 pb-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex-1 relative z-20">
         
         {/* Page Header */}
         <motion.div 
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 1, y: 0 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center max-w-2xl mx-auto mb-10"
+          className="text-center max-w-3xl mx-auto mb-10 relative z-20"
         >
-          <span className="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-xs font-extrabold text-cyan-400 uppercase tracking-widest">
+          <span className="inline-block px-4 py-1.5 rounded-full bg-cyan-500/20 border border-cyan-400/50 text-xs font-black text-cyan-300 uppercase tracking-widest shadow-lg shadow-cyan-500/20 mb-3">
             Registration Form
           </span>
-          <h1 className="text-3xl sm:text-5xl font-black text-white mt-2 font-orbitron">
+          <h1 className="text-3xl sm:text-5xl font-black text-white font-orbitron tracking-wide drop-shadow-md">
             Register for {SYMPOSIUM_INFO.name}
           </h1>
-          <p className="text-slate-400 text-sm sm:text-base mt-2">
-            Flat Fee: <strong className="text-amber-400 font-extrabold">₹250 per participant</strong> for up to 2 events of your choice!
+          <p className="text-slate-300 text-sm sm:text-base mt-2 font-medium">
+            Flat Fee: <strong className="text-amber-400 font-black">₹250 per participant</strong> for up to 2 events of your choice!
           </p>
         </motion.div>
 
@@ -286,7 +291,7 @@ export default function Register() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {eventsList.map((event) => {
-                const isSelected = selectedEventIds.includes(event.id);
+                const isSelected = selectedEventIds.some(id => id === event.id || id === event.slug);
                 const isDisabled = !isSelected && selectedEventIds.length >= 2;
                 const isTech = event.category === 'technical';
 

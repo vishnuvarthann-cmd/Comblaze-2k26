@@ -44,7 +44,7 @@ export default function Team() {
       <ParallaxWrapper speed={0.3} className="absolute left-[-10%] top-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[180px] pointer-events-none" />
       <ParallaxWrapper speed={0.4} className="absolute right-[-10%] bottom-1/3 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-[180px] pointer-events-none" />
 
-      <main className="pt-28 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex-1 relative z-10 space-y-16">
+      <main className="pt-36 sm:pt-44 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex-1 relative z-20 space-y-16">
         
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto">
